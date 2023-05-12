@@ -1,0 +1,6 @@
+# - Config file for the @PROJECT_NAME_LOWER@ package
+
+set(LIVOX_LIDAR_SDK_LIBRARY "@SDK_LIBRARY_STATIC@")
+
+set(livox_sdk2_FOUND true)
+set(LIVOX_SDK2_FOUND true)

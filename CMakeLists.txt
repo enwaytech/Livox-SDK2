@@ -18,3 +18,14 @@ endif(UNIX)
 
 add_subdirectory(sdk_core)
 add_subdirectory(samples)
+
+set(SDK_CMAKE_ROOT ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
+if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+  set(livox_sdk2_DIR ${SDK_CMAKE_ROOT} PARENT_SCOPE)
+endif()
+
+configure_file(
+  ${SDK_CMAKE_ROOT}/livox_sdk2Config.cmake.in
+  ${SDK_CMAKE_ROOT}/livox_sdk2Config.cmake @ONLY
+)
