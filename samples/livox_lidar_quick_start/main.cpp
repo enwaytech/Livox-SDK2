@@ -32,6 +32,9 @@
 #include <arpa/inet.h>
 #endif
 
+#include <rapidjson/document.h>
+#include <rapidjson/pointer.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -173,8 +176,29 @@ void LidarInfoChangeCallback(const uint32_t handle, const LivoxLidarInfo* info, 
 void LivoxLidarPushMsgCallback(const uint32_t handle, const uint8_t dev_type, const char* info, void* client_data) {
    struct in_addr tmp_addr;
    tmp_addr.s_addr = handle;  
-   std::cout << "handle: " << handle << ", ip: " << inet_ntoa(tmp_addr) << ", push msg info: " << std::endl;
+   std::cout << "handle: " << handle << " dev_type: " << (int)dev_type << ", ip: " << inet_ntoa(tmp_addr) << ", push msg info: " << std::endl;
    std::cout << info << std::endl;
+
+   rapidjson::Document document;
+   document.Parse(info);
+
+   assert(document.IsObject());
+
+   assert(document.HasMember("hms_code"));
+
+   // Using a reference for consecutive access is handy and faster.
+    const rapidjson::Value& hms_codes = document["hms_code"];
+    assert(hms_codes.IsArray());
+    for (rapidjson::SizeType i = 0; i < hms_codes.Size(); i++) // Uses SizeType instead of size_t
+    {
+      uint32_t hms_code = hms_codes[i].GetUint();
+      
+      uint8_t error_level = hms_code & 0x000000ff;
+      uint16_t error_code = (hms_code & 0xffff0000) >> 16;
+
+      printf("hms_codes[%d] = 0x%08x  :  level = 0x%02x  ,  code = 0x%04x\n", i, hms_code, error_level, error_code);
+    }
+
   return;
 }
 
